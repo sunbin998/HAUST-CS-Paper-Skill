@@ -1,0 +1,12 @@
+# 生成的论文文档
+*.docx
+
+# 参考论文 PDF
+*.pdf
+
+# Skill workspace 临时文件
+henan-univ-thesis-workspace/
+
+# Python
+__pycache__/
+*.pyc
