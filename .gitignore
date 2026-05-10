@@ -4,6 +4,9 @@
 # 参考论文 PDF
 *.pdf
 
+# Mermaid 生成的图片（可由脚本重新生成）
+diagrams/*.png
+
 # Skill workspace 临时文件
 henan-univ-thesis-workspace/
 

@@ -7,8 +7,10 @@
 
 import os
 import re
+import subprocess
+import tempfile
 from docx import Document
-from docx.shared import Pt, Cm, Emu, RGBColor
+from docx.shared import Pt, Cm, Emu, RGBColor, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.section import WD_ORIENT, WD_SECTION_START
 from docx.oxml.ns import qn, nsdecls
@@ -61,6 +63,10 @@ HEADER_FIXED = '河南科技大学毕业设计说明书（论文）'
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, f'{THESIS["title_cn"]}.docx')
+DIAGRAMS_DIR = os.path.join(OUTPUT_DIR, 'diagrams')
+
+# Mermaid CLI 配置
+MERMAID_PUPPETEER_CONFIG = os.path.join(DIAGRAMS_DIR, 'puppeteer-config.json')
 
 
 # ============================================================
@@ -416,6 +422,233 @@ def add_three_line_table(doc, headers, rows, col_widths=None):
         tcPr.append(tcBorders)
 
     return table
+
+
+# ============================================================
+# Mermaid 图形生成
+# ============================================================
+
+def ensure_diagrams_dir():
+    """确保 diagrams 目录和 puppeteer 配置存在"""
+    os.makedirs(DIAGRAMS_DIR, exist_ok=True)
+    if not os.path.exists(MERMAID_PUPPETEER_CONFIG):
+        with open(MERMAID_PUPPETEER_CONFIG, 'w') as f:
+            f.write('{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}')
+
+
+def generate_mermaid_image(mermaid_text, filename, width=2400, height=1600):
+    """将 Mermaid 文本渲染为 PNG 图片，返回图片路径"""
+    ensure_diagrams_dir()
+    output_path = os.path.join(DIAGRAMS_DIR, filename)
+
+    # 写入临时 .mmd 文件
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False,
+                                      encoding='utf-8', dir=DIAGRAMS_DIR) as f:
+        f.write(mermaid_text)
+        mmd_path = f.name
+
+    try:
+        cmd = [
+            'mmdc', '-i', mmd_path, '-o', output_path,
+            '-b', 'white', '-p', MERMAID_PUPPETEER_CONFIG,
+            '-w', str(width), '-H', str(height),
+            '-s', '2'
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if result.returncode != 0:
+            print(f'  [WARNING] Mermaid 渲染失败 ({filename}): {result.stderr.strip()}')
+            return None
+        return output_path
+    except FileNotFoundError:
+        print('  [WARNING] mmdc 未安装，跳过图形生成')
+        return None
+    except subprocess.TimeoutExpired:
+        print(f'  [WARNING] Mermaid 渲染超时 ({filename})')
+        return None
+    finally:
+        os.unlink(mmd_path)
+
+
+def add_figure(doc, img_path, caption, width_inches=5.0):
+    """在文档中插入图片并添加图注（图X-Y格式，五号宋体，居中）"""
+    if img_path is None or not os.path.exists(img_path):
+        add_body_para(doc, f'[{caption} — 图片生成失败，请手动插入]')
+        return
+
+    # 插入图片
+    para = doc.add_paragraph()
+    run = para.add_run()
+    run.add_picture(img_path, width=Inches(width_inches))
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(6), space_after=Pt(3))
+
+    # 图注
+    cap_para = doc.add_paragraph()
+    cap_run = cap_para.add_run(caption)
+    set_run_font(cap_run, cn_font=FONT_SONG, size=SIZE_WU)
+    cap_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    set_paragraph_format(cap_para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
+
+
+# ============================================================
+# Mermaid 图形定义
+# ============================================================
+
+DIAGRAM_ARCHITECTURE = """
+graph TB
+    subgraph 表现层
+        A[Vue.js 3 前端]
+        B[Element Plus 组件库]
+        C[Axios HTTP 客户端]
+    end
+    subgraph 业务逻辑层
+        D[FastAPI 后端]
+        E[用户管理模块]
+        F[智能对话模块]
+        G[知识库管理模块]
+        H[成长管理模块]
+    end
+    subgraph 数据访问层
+        I[SQLAlchemy ORM]
+        J[Chroma 客户端]
+    end
+    subgraph 数据存储层
+        K[(MySQL 8.0)]
+        L[(Chroma 向量库)]
+    end
+    subgraph 外部服务
+        M[GLM-4 大语言模型]
+        N[文本嵌入模型]
+    end
+    A --> D
+    D --> I
+    D --> J
+    I --> K
+    J --> L
+    F --> M
+    F --> N
+"""
+
+DIAGRAM_ER = """
+erDiagram
+    USER ||--o{ CONVERSATION : "拥有"
+    USER ||--o{ GROWTH_GOAL : "设定"
+    USER ||--o{ GROWTH_RECORD : "撰写"
+    CONVERSATION ||--|{ MESSAGE : "包含"
+    KNOWLEDGE_DOCUMENT ||--|{ KNOWLEDGE_CHUNK : "拆分为"
+    GROWTH_GOAL ||--o{ GROWTH_RECORD : "跟踪"
+
+    USER {
+        int id PK
+        string username
+        string email
+        string password_hash
+        string nickname
+        string role
+        datetime created_at
+    }
+    CONVERSATION {
+        int id PK
+        int user_id FK
+        string title
+        datetime created_at
+    }
+    MESSAGE {
+        int id PK
+        int conversation_id FK
+        string role
+        text content
+        datetime created_at
+    }
+    KNOWLEDGE_DOCUMENT {
+        int id PK
+        string title
+        string category
+        int chunk_count
+        string status
+        datetime uploaded_at
+    }
+    KNOWLEDGE_CHUNK {
+        int id PK
+        int document_id FK
+        text content
+        int chunk_index
+    }
+    GROWTH_GOAL {
+        int id PK
+        int user_id FK
+        string title
+        string category
+        string status
+        int priority
+        date deadline
+        datetime created_at
+    }
+    GROWTH_RECORD {
+        int id PK
+        int user_id FK
+        int goal_id FK
+        text content
+        datetime record_time
+    }
+"""
+
+DIAGRAM_RAG_FLOW = """
+graph LR
+    A[用户提问] --> B[问题向量化]
+    B --> C[向量相似度检索]
+    C --> D[Top-K 知识片段]
+    D --> E[组装提示词]
+    E --> F[大语言模型生成]
+    F --> G[返回辅导建议]
+
+    subgraph 知识库构建
+        H[知识文档] --> I[文本提取与分块]
+        I --> J[向量化嵌入]
+        J --> K[(Chroma 向量库)]
+    end
+
+    K --> C
+"""
+
+DIAGRAM_MODULE = """
+graph TD
+    A[个人成长辅导系统] --> B[用户管理模块]
+    A --> C[智能对话模块]
+    A --> D[知识库管理模块]
+    A --> E[个人成长管理模块]
+
+    B --> B1[用户注册]
+    B --> B2[用户登录]
+    B --> B3[个人信息管理]
+
+    C --> C1[RAG 检索增强]
+    C --> C2[多轮对话]
+    C --> C3[对话历史管理]
+
+    D --> D1[文档上传]
+    D --> D2[文本解析与分块]
+    D --> D3[向量化索引]
+
+    E --> E1[目标设定]
+    E --> E2[进度跟踪]
+    E --> E3[成长记录]
+"""
+
+DIAGRAM_LOGIN_FLOW = """
+graph TD
+    A[用户访问系统] --> B{已登录?}
+    B -->|是| C[进入主页面]
+    B -->|否| D[登录/注册页面]
+    D --> E[输入账号密码]
+    E --> F{验证通过?}
+    F -->|是| C
+    F -->|否| G[提示错误信息]
+    G --> D
+    C --> H[智能对话]
+    C --> I[知识库管理]
+    C --> J[成长管理]
+"""
 
 
 # ============================================================
@@ -1000,7 +1233,9 @@ def create_chapter_2(doc):
 # ============================================================
 # 第3章 系统设计
 # ============================================================
-def create_chapter_3(doc):
+def create_chapter_3(doc, generated_diagrams=None):
+    if generated_diagrams is None:
+        generated_diagrams = {}
     add_chapter_title(doc, '第3章 系统设计')
 
     add_section_title(doc, '3.1 系统总体架构设计')
@@ -1036,6 +1271,12 @@ def create_chapter_3(doc):
         '支持高效的向量相似度检索^{[8]}。'
     )
 
+    # 图 3-1 系统总体架构图
+    add_body_para(doc,
+        '如图3-1所示，本系统采用分层架构设计，各层之间通过标准化接口进行交互。'
+    )
+    add_figure(doc, generated_diagrams.get('architecture'), '图 3-1 系统总体架构图')
+
     add_body_para(doc,
         '表3-1所示为系统主要技术选型。'
     )
@@ -1063,6 +1304,13 @@ def create_chapter_3(doc):
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     add_section_title(doc, '3.2 功能模块设计')
+
+    # 图 3-3 功能模块结构图
+    add_body_para(doc,
+        '本系统的功能模块结构如图3-3所示，系统由用户管理、智能对话、知识库管理和'
+        '个人成长管理四个核心模块组成。'
+    )
+    add_figure(doc, generated_diagrams.get('module'), '图 3-3 系统功能模块结构图')
 
     add_subsection_title(doc, '3.2.1 用户管理模块')
 
@@ -1125,6 +1373,12 @@ def create_chapter_3(doc):
         '各实体之间的关系如下：一个用户可以拥有多个对话、多个成长目标和多条成长记录；'
         '一个对话包含多条消息；一篇知识文档被分割为多个知识片段。'
     )
+
+    # 图 3-2 数据库ER图
+    add_body_para(doc,
+        '如图3-2所示为系统的实体关系图，描述了各数据实体之间的关联关系。'
+    )
+    add_figure(doc, generated_diagrams.get('er'), '图 3-2 数据库ER图')
 
     add_subsection_title(doc, '3.3.2 数据库表设计')
 
@@ -1235,7 +1489,9 @@ def create_chapter_3(doc):
 # ============================================================
 # 第4章 系统实现
 # ============================================================
-def create_chapter_4(doc):
+def create_chapter_4(doc, generated_diagrams=None):
+    if generated_diagrams is None:
+        generated_diagrams = {}
     add_chapter_title(doc, '第4章 系统实现')
 
     add_section_title(doc, '4.1 开发环境与工具')
@@ -1266,6 +1522,12 @@ def create_chapter_4(doc):
     add_section_title(doc, '4.2 核心功能实现')
 
     add_subsection_title(doc, '4.2.1 RAG检索增强生成流程实现')
+
+    # 图 4-1 RAG流程图
+    add_body_para(doc,
+        '如图4-1所示，RAG流程包括知识库构建和在线检索生成两个阶段。'
+    )
+    add_figure(doc, generated_diagrams.get('rag_flow'), '图 4-1 RAG检索增强生成流程图')
 
     add_cited_para(doc,
         'RAG流程是本系统的核心技术实现，主要包括知识文档处理、向量检索和增强生成'
@@ -1586,7 +1848,30 @@ def create_acknowledgment(doc):
 # ============================================================
 # 主函数：组装文档
 # ============================================================
+def generate_diagrams():
+    """生成所有 Mermaid 图形，返回 {名称: 图片路径} 字典"""
+    print('正在生成图形...')
+    diagrams = {}
+    items = [
+        ('architecture', DIAGRAM_ARCHITECTURE, 'system_architecture.png'),
+        ('er', DIAGRAM_ER, 'database_er.png'),
+        ('rag_flow', DIAGRAM_RAG_FLOW, 'rag_flow.png'),
+        ('module', DIAGRAM_MODULE, 'module_structure.png'),
+    ]
+    for name, mmd_text, filename in items:
+        print(f'  生成 {filename}...')
+        diagrams[name] = generate_mermaid_image(mmd_text, filename)
+        if diagrams[name]:
+            print(f'    ✓ {filename}')
+        else:
+            print(f'    ✗ {filename} 生成失败')
+    return diagrams
+
+
 def generate_thesis():
+    # 0. 预生成所有图形
+    generated_diagrams = generate_diagrams()
+
     doc = Document()
 
     # 配置标题样式（必须在创建内容之前调用）
@@ -1608,22 +1893,20 @@ def generate_thesis():
     create_table_of_contents(doc)
 
     # === 正文部分：切换到阿拉伯数字页码 ===
-    # 先添加一个 section 用于正文页码切换
     # 第1章
     create_chapter_1(doc)
 
     # 设置正文第一个 section 的页码为阿拉伯数字从1开始
-    # 找到第1章的 section（即最后一个 section）
     body_section = doc.sections[-1]
     add_header(body_section, HEADER_FIXED)
     add_page_number(body_section)
     set_page_number_format(body_section, 'decimal')
     set_page_number_start(body_section, 1)
 
-    # 6-9. 正文章节
+    # 6-9. 正文章节（传入图形）
     create_chapter_2(doc)
-    create_chapter_3(doc)
-    create_chapter_4(doc)
+    create_chapter_3(doc, generated_diagrams)
+    create_chapter_4(doc, generated_diagrams)
     create_chapter_5(doc)
 
     # 10. 总结与展望
