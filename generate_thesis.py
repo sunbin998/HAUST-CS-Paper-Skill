@@ -79,7 +79,7 @@ def configure_styles(doc):
     h1 = doc.styles['Heading 1']
     h1.font.name = FONT_EN
     h1.font.size = SIZE_SAN
-    h1.font.bold = True
+    h1.font.bold = False
     h1.font.color.rgb = RGBColor(0, 0, 0)
     h1_fmt = h1.paragraph_format
     h1_fmt.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -101,7 +101,7 @@ def configure_styles(doc):
     h2 = doc.styles['Heading 2']
     h2.font.name = FONT_EN
     h2.font.size = SIZE_SI
-    h2.font.bold = True
+    h2.font.bold = False
     h2.font.color.rgb = RGBColor(0, 0, 0)
     h2_fmt = h2.paragraph_format
     h2_fmt.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -118,11 +118,11 @@ def configure_styles(doc):
         h2_rPr.insert(0, h2_rFonts)
     h2_rFonts.set(qn('w:eastAsia'), FONT_HEI)
 
-    # Heading 3 → 子节标题（小四号黑体，左对齐，黑色）
+    # Heading 3 → 子节标题（小四号宋体，左对齐，黑色）
     h3 = doc.styles['Heading 3']
     h3.font.name = FONT_EN
     h3.font.size = SIZE_XSI
-    h3.font.bold = True
+    h3.font.bold = False
     h3.font.color.rgb = RGBColor(0, 0, 0)
     h3_fmt = h3.paragraph_format
     h3_fmt.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -137,7 +137,7 @@ def configure_styles(doc):
     if h3_rFonts is None:
         h3_rFonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
         h3_rPr.insert(0, h3_rFonts)
-    h3_rFonts.set(qn('w:eastAsia'), FONT_HEI)
+    h3_rFonts.set(qn('w:eastAsia'), FONT_SONG)
 
 
 # ============================================================
