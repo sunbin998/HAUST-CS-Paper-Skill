@@ -470,7 +470,7 @@ def generate_mermaid_image(mermaid_text, filename, width=2400, height=1600):
 
 
 def add_figure(doc, img_path, caption, width_inches=5.0):
-    """在文档中插入图片并添加图注（图X-Y格式，五号宋体，居中）"""
+    """在文档中插入图片并添加图注（图X-Y格式，五号楷体，居中）"""
     if img_path is None or not os.path.exists(img_path):
         add_body_para(doc, f'[{caption} — 图片生成失败，请手动插入]')
         return
@@ -485,7 +485,7 @@ def add_figure(doc, img_path, caption, width_inches=5.0):
     # 图注
     cap_para = doc.add_paragraph()
     cap_run = cap_para.add_run(caption)
-    set_run_font(cap_run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(cap_run, cn_font=FONT_KAI, size=SIZE_WU)
     cap_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(cap_para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -726,7 +726,7 @@ def create_declaration_page(doc):
     # 写作声明
     para = doc.add_paragraph()
     run = para.add_run('学位论文写作声明')
-    set_run_font(run, cn_font=FONT_HEI, size=SIZE_SI, bold=True)
+    set_run_font(run, cn_font=FONT_HEI, size=SIZE_XER)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(30), space_after=Pt(15))
 
@@ -752,7 +752,7 @@ def create_declaration_page(doc):
     # 使用授权说明
     para = doc.add_paragraph()
     run = para.add_run('学位论文使用授权说明')
-    set_run_font(run, cn_font=FONT_HEI, size=SIZE_SI, bold=True)
+    set_run_font(run, cn_font=FONT_HEI, size=SIZE_XER)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(30), space_after=Pt(15))
 
@@ -800,14 +800,14 @@ def create_chinese_abstract(doc):
     # 论文标题
     para = doc.add_paragraph()
     run = para.add_run(THESIS['title_cn'])
-    set_run_font(run, cn_font=FONT_HEI, size=SIZE_XSAN, bold=True)
+    set_run_font(run, cn_font=FONT_HEI, size=SIZE_SAN)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(20), space_after=Pt(15))
 
     # "摘 要" 标题
     para = doc.add_paragraph()
     run = para.add_run('摘  要')
-    set_run_font(run, cn_font=FONT_HEI, size=SIZE_XSAN, bold=True)
+    set_run_font(run, cn_font=FONT_HEI, size=SIZE_SAN)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(10), space_after=Pt(10))
 
@@ -872,14 +872,14 @@ def create_english_abstract(doc):
     # 英文标题
     para = doc.add_paragraph()
     run = para.add_run(THESIS['title_en_upper'])
-    set_run_font(run, en_font=FONT_EN, size=SIZE_XSAN, bold=True)
+    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(20), space_after=Pt(15))
 
     # ABSTRACT 标题
     para = doc.add_paragraph()
     run = para.add_run('ABSTRACT')
-    set_run_font(run, en_font=FONT_EN, size=SIZE_XSAN, bold=True)
+    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(10), space_after=Pt(10))
 
@@ -955,7 +955,7 @@ def create_table_of_contents(doc):
     # "目录" 标题
     para = doc.add_paragraph()
     run = para.add_run('目  录')
-    set_run_font(run, cn_font=FONT_HEI, size=SIZE_XSAN, bold=True)
+    set_run_font(run, cn_font=FONT_HEI, size=SIZE_SAN)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(20), space_after=Pt(15))
 
@@ -1299,7 +1299,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     # 表格标题
     para = doc.add_paragraph()
     run = para.add_run('表 3-1 系统主要技术选型')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1403,7 +1403,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 3-2 用户表（user）')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1421,7 +1421,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 3-3 对话表（conversation）')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1439,7 +1439,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 3-4 消息表（message）')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1461,7 +1461,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 3-5 成长目标表（growth_goal）')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1481,7 +1481,7 @@ def create_chapter_3(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 3-6 知识文档表（knowledge_document）')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1515,7 +1515,7 @@ def create_chapter_4(doc, generated_diagrams=None):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 4-1 开发环境配置')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1651,7 +1651,7 @@ def create_chapter_5(doc):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 5-1 功能测试用例及结果')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1682,7 +1682,7 @@ def create_chapter_5(doc):
     )
     para = doc.add_paragraph()
     run = para.add_run('表 5-2 性能测试结果')
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
@@ -1795,7 +1795,7 @@ def create_references(doc):
     for ref in refs:
         para = doc.add_paragraph()
         run = para.add_run(ref)
-        set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+        set_run_font(run, cn_font=FONT_SONG, size=SIZE_XSI)
         set_paragraph_format(para, first_line_indent=Emu(0),
                              alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
                              space_before=Pt(2), space_after=Pt(2))
