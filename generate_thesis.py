@@ -76,6 +76,12 @@ MERMAID_PUPPETEER_CONFIG = os.path.join(DIAGRAMS_DIR, 'puppeteer-config.json')
 
 def configure_styles(doc):
     """配置文档的标题样式，使 TOC 域可以识别章节层级"""
+
+    def _clear_theme_fonts(rFonts):
+        """删除主题字体引用，防止 Word 用主题字体覆盖自定义字体"""
+        for attr in ('eastAsiaTheme', 'asciiTheme', 'hAnsiTheme', 'cstheme'):
+            rFonts.attrib.pop(qn(f'w:{attr}'), None)
+
     # Heading 1 → 章标题（三号黑体，居中，黑色）
     h1 = doc.styles['Heading 1']
     h1.font.name = FONT_EN
@@ -87,7 +93,6 @@ def configure_styles(doc):
     h1_fmt.space_before = Pt(0)
     h1_fmt.space_after = Pt(0)
     h1_fmt.page_break_before = True
-    # 东亚字体
     h1_rPr = h1.element.find(qn('w:rPr'))
     if h1_rPr is None:
         h1_rPr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
@@ -99,6 +104,7 @@ def configure_styles(doc):
     h1_rFonts.set(qn('w:eastAsia'), FONT_HEI)
     h1_rFonts.set(qn('w:ascii'), FONT_HEI)
     h1_rFonts.set(qn('w:hAnsi'), FONT_HEI)
+    _clear_theme_fonts(h1_rFonts)
 
     # Heading 2 → 节标题（四号黑体，左对齐，黑色）
     h2 = doc.styles['Heading 2']
@@ -122,6 +128,7 @@ def configure_styles(doc):
     h2_rFonts.set(qn('w:eastAsia'), FONT_HEI)
     h2_rFonts.set(qn('w:ascii'), FONT_HEI)
     h2_rFonts.set(qn('w:hAnsi'), FONT_HEI)
+    _clear_theme_fonts(h2_rFonts)
 
     # Heading 3 → 子节标题（小四号宋体，左对齐，黑色）
     h3 = doc.styles['Heading 3']
@@ -145,6 +152,7 @@ def configure_styles(doc):
     h3_rFonts.set(qn('w:eastAsia'), FONT_SONG)
     h3_rFonts.set(qn('w:ascii'), FONT_SONG)
     h3_rFonts.set(qn('w:hAnsi'), FONT_SONG)
+    _clear_theme_fonts(h3_rFonts)
 
 
 # ============================================================
