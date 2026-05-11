@@ -97,6 +97,8 @@ def configure_styles(doc):
         h1_rFonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
         h1_rPr.insert(0, h1_rFonts)
     h1_rFonts.set(qn('w:eastAsia'), FONT_HEI)
+    h1_rFonts.set(qn('w:ascii'), FONT_HEI)
+    h1_rFonts.set(qn('w:hAnsi'), FONT_HEI)
 
     # Heading 2 → 节标题（四号黑体，左对齐，黑色）
     h2 = doc.styles['Heading 2']
@@ -118,6 +120,8 @@ def configure_styles(doc):
         h2_rFonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
         h2_rPr.insert(0, h2_rFonts)
     h2_rFonts.set(qn('w:eastAsia'), FONT_HEI)
+    h2_rFonts.set(qn('w:ascii'), FONT_HEI)
+    h2_rFonts.set(qn('w:hAnsi'), FONT_HEI)
 
     # Heading 3 → 子节标题（小四号宋体，左对齐，黑色）
     h3 = doc.styles['Heading 3']
@@ -139,6 +143,8 @@ def configure_styles(doc):
         h3_rFonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
         h3_rPr.insert(0, h3_rFonts)
     h3_rFonts.set(qn('w:eastAsia'), FONT_SONG)
+    h3_rFonts.set(qn('w:ascii'), FONT_SONG)
+    h3_rFonts.set(qn('w:hAnsi'), FONT_SONG)
 
 
 # ============================================================
