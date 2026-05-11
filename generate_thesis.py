@@ -52,11 +52,12 @@ SIZE_XWU = Pt(9)        # 小五号
 SIZE_ER = Pt(22)        # 二号
 SIZE_XER = Pt(18)       # 小二号
 
-# 页边距
-MARGIN_TOP = Cm(2.5)
-MARGIN_BOTTOM = Cm(2.5)
-MARGIN_LEFT = Cm(3.0)   # 装订线
+# 页边距（批注[0]：上下2.54cm，左右2.5cm，装订线1cm）
+MARGIN_TOP = Cm(2.54)
+MARGIN_BOTTOM = Cm(2.54)
+MARGIN_LEFT = Cm(2.5)
 MARGIN_RIGHT = Cm(2.5)
+MARGIN_GUTTER = Cm(1.0)
 
 # 页眉文字
 HEADER_FIXED = '河南科技大学毕业设计说明书（论文）'
@@ -105,8 +106,8 @@ def configure_styles(doc):
     h2.font.color.rgb = RGBColor(0, 0, 0)
     h2_fmt = h2.paragraph_format
     h2_fmt.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    h2_fmt.space_before = Pt(6)
-    h2_fmt.space_after = Pt(3)
+    h2_fmt.space_before = Pt(6)   # 批注[20]：段前0.5行
+    h2_fmt.space_after = Pt(6)    # 批注[20]：段后0.5行
     h2_fmt.page_break_before = False
     h2_rPr = h2.element.find(qn('w:rPr'))
     if h2_rPr is None:
@@ -126,8 +127,8 @@ def configure_styles(doc):
     h3.font.color.rgb = RGBColor(0, 0, 0)
     h3_fmt = h3.paragraph_format
     h3_fmt.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    h3_fmt.space_before = Pt(3)
-    h3_fmt.space_after = Pt(3)
+    h3_fmt.space_before = Pt(6)   # 批注[22]：段前0.5行
+    h3_fmt.space_after = Pt(6)    # 批注[22]：段后0.5行
     h3_fmt.page_break_before = False
     h3_rPr = h3.element.find(qn('w:rPr'))
     if h3_rPr is None:
@@ -162,8 +163,8 @@ def set_run_font(run, cn_font=FONT_SONG, en_font=FONT_EN, size=SIZE_XSI, bold=Fa
 
 def set_paragraph_format(para, alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
                          first_line_indent=Emu(480060),  # 约2字符
-                         line_spacing=1.5, space_before=Pt(0), space_after=Pt(0)):
-    """设置段落格式"""
+                         line_spacing=1.0, space_before=Pt(0), space_after=Pt(0)):
+    """设置段落格式（批注[5]：全文单倍行距）"""
     pf = para.paragraph_format
     pf.alignment = alignment
     pf.first_line_indent = first_line_indent
@@ -174,7 +175,7 @@ def set_paragraph_format(para, alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
 
 
 def add_body_para(doc, text, bold=False, indent=True):
-    """添加正文段落（小四宋体，1.5倍行距）"""
+    """添加正文段落（小四宋体，单倍行距）"""
     para = doc.add_paragraph()
     run = para.add_run(text)
     set_run_font(run, cn_font=FONT_SONG, size=SIZE_XSI, bold=bold)
@@ -252,6 +253,7 @@ def setup_page_margins(section):
     section.bottom_margin = MARGIN_BOTTOM
     section.left_margin = MARGIN_LEFT
     section.right_margin = MARGIN_RIGHT
+    section.gutter = MARGIN_GUTTER
 
 
 def add_header(section, text):
@@ -264,7 +266,7 @@ def add_header(section, text):
         para = header.add_paragraph()
     para.text = ''
     run = para.add_run(text)
-    set_run_font(run, cn_font=FONT_SONG, size=SIZE_WU)
+    set_run_font(run, cn_font=FONT_SONG, size=SIZE_XWU)  # 批注[5]：页眉小五号
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     # 添加页眉下横线
     pPr = para._element.get_or_add_pPr()
@@ -872,14 +874,14 @@ def create_english_abstract(doc):
     # 英文标题
     para = doc.add_paragraph()
     run = para.add_run(THESIS['title_en_upper'])
-    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN)
+    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN, bold=True)  # 批注[12]：加粗
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(20), space_after=Pt(15))
 
     # ABSTRACT 标题
     para = doc.add_paragraph()
     run = para.add_run('ABSTRACT')
-    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN)
+    set_run_font(run, en_font=FONT_EN, size=SIZE_SAN, bold=True)  # 批注[14]：加粗
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(10), space_after=Pt(10))
 
