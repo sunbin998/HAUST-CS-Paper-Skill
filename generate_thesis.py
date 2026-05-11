@@ -36,11 +36,11 @@ THESIS = {
     'keywords_en': ['Retrieval-Augmented Generation', 'Personal Growth', 'Counseling System', 'Large Language Model', 'Knowledge Base'],
 }
 
-# 字体
-FONT_SONG = '宋体'
-FONT_HEI = '黑体'
+# 字体（使用英文字体名确保跨平台兼容，避免 Linux 下映射为 MS Gothic）
+FONT_SONG = 'SimSun'         # 宋体
+FONT_HEI = 'SimHei'          # 黑体
 FONT_EN = 'Times New Roman'
-FONT_KAI = '楷体'
+FONT_KAI = 'KaiTi'           # 楷体
 
 # 字号（磅值）
 SIZE_SAN = Pt(16)       # 三号
