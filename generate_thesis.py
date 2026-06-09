@@ -381,8 +381,16 @@ def add_toc_field(doc):
     run5._element.append(fldChar3)
 
 
-def add_three_line_table(doc, headers, rows, col_widths=None):
-    """添加三线表"""
+def add_three_line_table(doc, headers, rows, caption=None, col_widths=None):
+    """添加三线表，表注在表格上方居中"""
+    # 表注（在表格上方）
+    if caption:
+        cap_para = doc.add_paragraph()
+        cap_run = cap_para.add_run(caption)
+        set_run_font(cap_run, cn_font=FONT_KAI, size=SIZE_WU)
+        set_paragraph_format(cap_para, alignment=WD_ALIGN_PARAGRAPH.CENTER,
+                             first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
+
     table = doc.add_table(rows=len(rows) + 1, cols=len(headers))
     table.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
@@ -495,15 +503,15 @@ def add_figure(doc, img_path, caption, width_inches=5.0):
     para = doc.add_paragraph()
     run = para.add_run()
     run.add_picture(img_path, width=Inches(width_inches))
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(6), space_after=Pt(3))
+    set_paragraph_format(para, alignment=WD_ALIGN_PARAGRAPH.CENTER,
+                         first_line_indent=Emu(0), space_before=Pt(6), space_after=Pt(3))
 
     # 图注
     cap_para = doc.add_paragraph()
     cap_run = cap_para.add_run(caption)
     set_run_font(cap_run, cn_font=FONT_KAI, size=SIZE_WU)
-    cap_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(cap_para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
+    set_paragraph_format(cap_para, alignment=WD_ALIGN_PARAGRAPH.CENTER,
+                         first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
 
 # ============================================================
@@ -1309,15 +1317,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['向量数据库', 'Chroma', '开源AI向量数据库'],
             ['大语言模型', 'GLM-4 API', '智谱AI大语言模型接口'],
             ['嵌入模型', 'text-embedding', '文本向量嵌入模型'],
-        ]
+        ],
+        caption='表 3-1 系统主要技术选型'
     )
-
-    # 表格标题
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-1 系统主要技术选型')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     add_section_title(doc, '3.2 功能模块设计')
 
@@ -1415,13 +1417,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['avatar', 'VARCHAR(255)', '头像URL'],
             ['role', 'ENUM("user","admin")', '用户角色'],
             ['created_at', 'DATETIME', '创建时间'],
-        ]
+        ],
+        caption='表 3-2 用户表（user）'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-2 用户表（user）')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     # 对话表
     add_body_para(doc, '（2）对话表（conversation）', indent=False)
@@ -1433,13 +1431,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['title', 'VARCHAR(100)', '对话标题'],
             ['created_at', 'DATETIME', '创建时间'],
             ['updated_at', 'DATETIME', '更新时间'],
-        ]
+        ],
+        caption='表 3-3 对话表（conversation）'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-3 对话表（conversation）')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     # 消息表
     add_body_para(doc, '（3）消息表（message）', indent=False)
@@ -1451,13 +1445,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['role', 'ENUM("user","assistant")', '消息角色'],
             ['content', 'TEXT', '消息内容'],
             ['created_at', 'DATETIME', '创建时间'],
-        ]
+        ],
+        caption='表 3-4 消息表（message）'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-4 消息表（message）')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     # 成长目标表
     add_body_para(doc, '（4）成长目标表（growth_goal）', indent=False)
@@ -1473,13 +1463,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['priority', 'INT', '优先级'],
             ['deadline', 'DATE', '计划完成日期'],
             ['created_at', 'DATETIME', '创建时间'],
-        ]
+        ],
+        caption='表 3-5 成长目标表（growth_goal）'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-5 成长目标表（growth_goal）')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     # 知识文档表
     add_body_para(doc, '（5）知识文档表（knowledge_document）', indent=False)
@@ -1493,13 +1479,9 @@ def create_chapter_3(doc, generated_diagrams=None):
             ['chunk_count', 'INT', '知识片段数量'],
             ['status', 'ENUM("processing","ready","error")', '处理状态'],
             ['uploaded_at', 'DATETIME', '上传时间'],
-        ]
+        ],
+        caption='表 3-6 知识文档表（knowledge_document）'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 3-6 知识文档表（knowledge_document）')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
 
 # ============================================================
@@ -1527,13 +1509,9 @@ def create_chapter_4(doc, generated_diagrams=None):
             ['数据库', 'MySQL', '8.0'],
             ['向量数据库', 'Chroma', '0.4+'],
             ['版本控制', 'Git', '2.40+'],
-        ]
+        ],
+        caption='表 4-1 开发环境配置'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 4-1 开发环境配置')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     add_section_title(doc, '4.2 核心功能实现')
 
@@ -1663,13 +1641,9 @@ def create_chapter_5(doc):
             ['TC-008', '知识库', '上传TXT文档', '文本提取成功', '提取正确', '通过'],
             ['TC-009', '成长管理', '创建成长目标', '目标保存成功', '保存成功', '通过'],
             ['TC-010', '成长管理', '添加成长记录', '记录保存成功', '保存成功', '通过'],
-        ]
+        ],
+        caption='表 5-1 功能测试用例及结果'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 5-1 功能测试用例及结果')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     add_body_para(doc,
         '功能测试结果表明，系统各模块的功能均能够正常运行，满足需求分析中确定的'
@@ -1694,13 +1668,9 @@ def create_chapter_5(doc):
             ['智能对话（有缓存）', '单用户对话', '3.2s', '达标'],
             ['知识库检索', '1000篇文档', '120ms', '达标'],
             ['文档上传处理', '5MB PDF文档', '15.6s', '达标'],
-        ]
+        ],
+        caption='表 5-2 性能测试结果'
     )
-    para = doc.add_paragraph()
-    run = para.add_run('表 5-2 性能测试结果')
-    set_run_font(run, cn_font=FONT_KAI, size=SIZE_WU)
-    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(para, first_line_indent=Emu(0), space_before=Pt(3), space_after=Pt(6))
 
     add_body_para(doc,
         '性能测试结果表明，系统的各项性能指标均满足设计要求。页面加载时间和API'
