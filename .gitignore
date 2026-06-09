@@ -1,16 +1,8 @@
-# 生成的论文文档
-*.docx
+# 只保留 henan-univ-thesis/ 和 README.md
+/*
+!.gitignore
+!README.md
+!henan-univ-thesis/
 
-# 参考论文 PDF
-*.pdf
-
-# Mermaid 生成的图片（可由脚本重新生成）
-diagrams/*.png
-
-# Skill workspace 临时文件
-henan-univ-thesis-workspace/
-
-# Python
-__pycache__/
-*.pyc
-*/Zone.Identifier
+# Windows
+*Zone.Identifier
