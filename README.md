@@ -30,6 +30,13 @@ henan-univ-thesis/
 
 通过 Claude Code 加载本 skill，提供毕业设计项目仓库路径即可自动生成完整论文。
 
-## 作者
+## 技术栈
 
-JackSun (孙志豪) - 河南科技大学 信息工程学院 计算机科学与技术专业
+- **文档生成**：python-docx
+- **图表生成**：Mermaid CLI + Puppeteer
+- **AI 工具**：Claude Code Skill
+- **参考文献**：GB/T 7714 国家标准格式
+
+## 许可证
+
+MIT License
