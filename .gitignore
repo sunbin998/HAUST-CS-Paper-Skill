@@ -13,3 +13,4 @@ henan-univ-thesis-workspace/
 # Python
 __pycache__/
 *.pyc
+*/Zone.Identifier
